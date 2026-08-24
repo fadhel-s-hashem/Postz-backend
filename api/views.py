@@ -62,3 +62,10 @@ def sign_in(request):
 
     token = create_access_token(user)
     return Response({"token": token})
+
+
+@api_view(["GET"])
+def user_list(request):
+    users = User.objects.all().order_by("username")
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
