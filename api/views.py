@@ -15,3 +15,34 @@ def create_access_token(user):
         "username": user.username,
     }
     return str(token)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def sign_up(request):
+    username = request.data.get("username", "").strip()
+    password = request.data.get("password", "")
+    confirm_password = request.data.get("confirmPassword", "")
+
+    if not username or not password:
+        return Response(
+            {"err": "Username and password are required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if password != confirm_password:
+        return Response(
+            {"err": "Passwords do not match."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {"err": "That username is already taken."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    user = User.objects.create_user(username=username, password=password)
+    token = create_access_token(user)
+
+    return Response({"token": token}, status=status.HTTP_201_CREATED)
