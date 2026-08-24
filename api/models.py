@@ -35,7 +35,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name="comments",
     )
-    Postz = models.ForeignKey(
+    postz = models.ForeignKey(
         Postz,
         on_delete=models.CASCADE,
         related_name="comments",
