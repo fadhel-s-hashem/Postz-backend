@@ -46,3 +46,19 @@ def sign_up(request):
     token = create_access_token(user)
 
     return Response({"token": token}, status=status.HTTP_201_CREATED)
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def sign_in(request):
+    username = request.data.get("username", "")
+    password = request.data.get("password", "")
+    user = authenticate(username=username, password=password)
+
+    if user is None:
+        return Response(
+            {"err": "Invalid username or password."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    token = create_access_token(user)
+    return Response({"token": token})
