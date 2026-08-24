@@ -11,3 +11,24 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["_id", "username"]
 
 
+
+class PostzSerializer(serializers.ModelSerializer):
+    _id = serializers.CharField(source="pk", read_only=True)
+    author = UserSerializer(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+    createdAt = serializers.DateTimeField(
+        source="created_at",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Postz
+        fields = [
+            "_id",
+            "title",
+            "text",
+            "category",
+            "author",
+            "comments",
+            "createdAt",
+        ]
