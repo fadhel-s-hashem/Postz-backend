@@ -11,6 +11,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["_id", "username"]
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    _id = serializers.CharField(source="pk", read_only=True)
+    author = UserSerializer(read_only=True)
+    createdAt = serializers.DateTimeField(
+        source="created_at",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Comment
+        fields = ["_id", "text", "author", "createdAt"]
 
 class PostzSerializer(serializers.ModelSerializer):
     _id = serializers.CharField(source="pk", read_only=True)
@@ -34,14 +45,3 @@ class PostzSerializer(serializers.ModelSerializer):
         ]
 
 
-class CommentSerializer(serializers.ModelSerializer):
-    _id = serializers.CharField(source="pk", read_only=True)
-    author = UserSerializer(read_only=True)
-    createdAt = serializers.DateTimeField(
-        source="created_at",
-        read_only=True,
-    )
-
-    class Meta:
-        model = Comment
-        fields = ["_id", "text", "author", "createdAt"]
