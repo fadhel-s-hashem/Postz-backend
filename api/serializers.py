@@ -32,3 +32,16 @@ class PostzSerializer(serializers.ModelSerializer):
             "comments",
             "createdAt",
         ]
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    _id = serializers.CharField(source="pk", read_only=True)
+    author = UserSerializer(read_only=True)
+    createdAt = serializers.DateTimeField(
+        source="created_at",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Comment
+        fields = ["_id", "text", "author", "createdAt"]
