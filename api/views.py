@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 
-from .models import Postz, Comment
-from .serializers import UserSerializer
+from .models import Postz
+from .serializers import UserSerializer, PostzSerializer
 
 def create_access_token(user):
     token = RefreshToken.for_user(user).access_token
@@ -71,3 +71,19 @@ def user_list(request):
     users = User.objects.all().order_by("username")
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(["GET", "POST"])
+def postz_list_create(request):
+    if request.method == 'GET':
+        postz_list = Postz.objects.all()
+        serializer = PostzSerializer(postz_list, many=True)
+        return Response(serializer.data)
+
+    serializer = PostzSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save(author=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
