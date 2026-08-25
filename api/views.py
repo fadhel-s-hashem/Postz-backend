@@ -77,13 +77,43 @@ def user_list(request):
 def postz_list_create(request):
     if request.method == 'GET':
         postz_list = Postz.objects.all()
-        serializer = PostzSerializer(postz_list, many=True)
+        serializer =  PostzSerializer(postz_list, many=True)
         return Response(serializer.data)
 
     serializer = PostzSerializer(data=request.data)
 
     if serializer.is_valid():
-        serializer.save(author=request.user)
+        serializer.save(author= request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(["GET","PUT","DELETE"])
+def postz_detail(request, postz_id):
+    postz = get_object_or_404(Postz, pk=postz_id)
+
+    if request.method == "GET":
+        serializer = PostzSerializer(postz)
+        return Response(serializer.data)
+
+    if postz.author != request.user:
+        return Response(
+            {"err": "You can only change your own posts."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    if request.method == "PUT":
+        serializer = PostzSerializer(postz, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    deleted_id = str(postz.id)
+    postz.delete()
+    return Response({"message": "Post deleted.", "_id": deleted_id})
+

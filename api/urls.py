@@ -8,4 +8,5 @@ urlpatterns = [
     path("auth/sign-in", views.sign_in, name="sign-in"),
     path("users", views.user_list, name="user-list"),
     path("postz", views.postz_list_create, name="postz_list_create"),
+    path("postz/<int:postz_id>", views.postz_detail, name="postz_detail")
 ]
