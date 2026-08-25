@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 
-from .models import Postz
-from .serializers import UserSerializer, PostzSerializer
+from .models import Postz, Comment
+from .serializers import UserSerializer, PostzSerializer, CommentSerializer
 
 def create_access_token(user):
     token = RefreshToken.for_user(user).access_token
@@ -116,4 +116,32 @@ def postz_detail(request, postz_id):
     deleted_id = str(postz.id)
     postz.delete()
     return Response({"message": "Post deleted.", "_id": deleted_id})
+
+
+@api_view(["POST"])
+def comment_create(request, postz_id):
+    postz = get_object_or_404(Postz, pk = postz_id)
+    serializer = CommentSerializer(data= request.data)
+
+
+    if serializer.is_valid() :
+        serializer.save(author= request.user, postz=postz)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors,status =status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["DELETE"])
+def comment_delete(request, postz_id, comment_id):
+    comment = get_object_or_404(Comment, pk= comment_id, postz_id=postz_id)
+
+    if comment.author != request.user:
+        return Response(
+            {"err": "You can only delete your comments."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    deleted_id = str(comment.id)
+    comment.delete()
+    return Response({"message": "Comment deleted.", "_id": deleted_id}, status=status.HTTP_200_OK)
 
