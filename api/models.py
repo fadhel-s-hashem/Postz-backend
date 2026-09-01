@@ -6,7 +6,7 @@ class Postz(models.Model):
         ("News", "News"), 
         ("Sports", "Sports"), 
         ("Games", "Games"), 
-        ("Movies/shows", "Movies/shows"), 
+        ("Movies-shows", "Movies-shows"), 
         ("Music", "Music"), 
         ("Other", "Other"), 
     ] 
