@@ -10,7 +10,7 @@ class Postz(models.Model):
         ("Music", "Music"), 
         ("Other", "Other"), 
     ] 
-    title = models.CharField(max_length=45) 
+    title = models.CharField(max_length=100) 
     text = models.TextField() 
     category = models.CharField( 
         max_length=20, 
